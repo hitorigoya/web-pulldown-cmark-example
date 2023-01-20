@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #markdown-input,
+        #html-output {
+            font-family: Consolas, Monaco, monospace;
+            display: block;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .convert-button,
+        .copy-to-clipboard-button,
+        .clear-button {
+            font-weight: bold;
+            padding: 8px 16px;
+            margin-top: 16px;
+            margin-bottom: 24px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .convert-button {
+            background-color: #d20313;
+            color: #ffffff;
+        }
+
+        .convert-button:hover {
+            cursor: pointer;
+            background-color: #e60012;
+        }
+
+        .copy-to-clipboard-button {
+            background-color: #3EAED6;
+            color: #ffffff;
+        }
+
+        .copy-to-clipboard-button:hover {
+            cursor: pointer;
+            background-color: #45bfea;
+        }
+
+        .clear-button {
+            background-color: #dbdada;
+            color: #231e1e;
+        }
+
+        .clear-button:hover {
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
+
+        .click-animation {
+            animation-duration: 300ms;
+            animation-name: clicked;
+        }
+
+        @keyframes clicked {
+            from {
+                background-color: #45bfea;
+
+            }
+
+            50% {
+                background-color: #337ED4;
+
+            }
+
+            to {
+                background-color: #45bfea;
+            }
+        }
+
+        .markdown-symbol {
+            color: #519ABA;
+        }
+
+        .html-symbol {
+            color: #eb6c2f;
+        }
+    </style>
+</head>
+
+<body>
+    <span class="markdown-symbol">⇓</span><span>Markdown</span>
+    <textarea name="markdown-input" id="markdown-input" cols="32" rows="8" autofocus="true"></textarea>
+
+    <button class="convert-button">Convert</button>
+    <button class="clear-button">Clear</button>
+
+    <div>
+        <span class="html-symbol">↔</span><span>HTML</span>
+    </div>
+    <textarea name="html-output" id="html-output" cols="32" rows="8"></textarea>
+    <button class="copy-to-clipboard-button">Copy to clipboard</button>
+
+
+    <script type="module">
+        import init, { render_markdown } from './pkg/web_pulldown_cmark.js'
+
+        async function run() {
+            await init()
+
+            const markdownInput = document.querySelector('#markdown-input')
+            const htmlOutput = document.querySelector('#html-output')
+            const convertButton = document.querySelector('.convert-button')
+            const clearButton = document.querySelector('.clear-button')
+            const copytoClipboardButton = document.querySelector('.copy-to-clipboard-button')
+
+            // convert
+            convertButton.addEventListener('click', () => {
+                htmlOutput.value = render_markdown(markdownInput.value)
+            })
+
+            // clear
+            clearButton.addEventListener('click', () => {
+                markdownInput.value = ''
+                htmlOutput.value = ''
+            })
+
+            // copy to clipboard
+            copytoClipboardButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(htmlOutput.value).then(() => {
+                    copytoClipboardButton.classList.add('click-animation')
+                    setTimeout(() => {
+                        copytoClipboardButton.classList.remove('click-animation')
+                    }, 300)
+                }, () => {
+                    console.log('clipboard write failed')
+                })
+            })
+        }
+
+        run()
+
+    </script>
+</body>
+
+</html>
